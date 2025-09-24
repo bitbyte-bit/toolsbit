@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>umar technologies</title>
+    <style>
+        body { font-family: Arial, sans-serif;
+             margin: 40px;
+             background-color: #f4f4f4;
+                text-align: center;
+
+             }
+        #dateDisplay { margin-top: 20px;
+             font-size: 1.2em; 
+             color: #333; }
+        button { padding: 10px 20px;
+             font-size: 1em;
+             }
+        h1 { color: #4CAF50;
+             font-size: 2em;
+             margin-bottom: 20px;
+             text-transform: uppercase;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>umar technologies</h1>
+    <button id="startDateBtn">Start Date</button>
+    <div id="dateDisplay"></div>
+    <script>
+        // Helper: get date string (YYYY-MM-DD)
+        function getTodayKey() {
+            const now = new Date();
+            return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+        }
+
+        // Helper: get color theme for a day (cycle through a palette)
+        function getDayTheme(dayIndex) {
+            const themes = [
+                {bg:'#e3f2fd', border:'#1976d2', text:'#0d47a1'}, // blue
+                {bg:'#e8f5e9', border:'#43a047', text:'#1b5e20'}, // green
+                {bg:'#fffde7', border:'#ffb300', text:'#ff6f00'}, // yellow
+                {bg:'#fce4ec', border:'#d81b60', text:'#880e4f'}, // pink
+                {bg:'#ede7f6', border:'#7e57c2', text:'#4527a0'}  // purple
+            ];
+            return themes[dayIndex % themes.length];
+        }
+
+        // Render all records from localStorage
+        function renderDayRecords() {
+            // Remove old record cards
+            document.querySelectorAll('.day-record-card').forEach(card => card.remove());
+            const records = JSON.parse(localStorage.getItem('dayRecords') || '{}');
+            const keys = Object.keys(records).sort();
+            keys.forEach((key, idx) => {
+                const rec = records[key];
+                const theme = getDayTheme(idx);
+                const card = document.createElement('div');
+                card.className = 'day-record-card';
+                card.style.cssText = `margin: 24px auto; padding: 22px; background: ${theme.bg}; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.13); max-width: 370px; border: 4px solid ${theme.border}; color: ${theme.text}; font-weight: bold; border-style: double;`;
+                card.innerHTML = `<div style='font-size:1.15em;margin-bottom:8px;letter-spacing:1px;'>${key}</div><div>${rec.text}</div>`;
+                document.body.appendChild(card);
+            });
+        }
+
+        // On page load, render records
+        renderDayRecords();
+
+        document.getElementById('startDateBtn').addEventListener('click', function() {
+            const todayKey = getTodayKey();
+            let records = JSON.parse(localStorage.getItem('dayRecords') || '{}');
+            if (records[todayKey]) {
+                alert('A record for today already exists! You cannot create another record for the same day.');
+                return;
+            }
+            const now = new Date();
+            document.getElementById('dateDisplay').textContent = 'Started at: ' + now.toLocaleString();
+            // Save a new record for today
+            records[todayKey] = { text: 'Started at: ' + now.toLocaleString() };
+            localStorage.setItem('dayRecords', JSON.stringify(records));
+            renderDayRecords();
+        });
+        // Create a card when start button is clicked
+        document.getElementById('startDateBtn').addEventListener('click', function() {
+            const card = document.createElement('div');
+            card.style.cssText = 'margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 300px;';
+
+            const text = document.createElement('p');
+            text.textContent = 'Have money?';
+
+            const yesBtn = document.createElement('button');
+            yesBtn.textContent = 'Yes';
+            yesBtn.style.marginRight = '10px';
+
+            const noBtn = document.createElement('button');
+            noBtn.textContent = 'No';
+
+            card.appendChild(text);
+            card.appendChild(yesBtn);
+            card.appendChild(noBtn);
+
+            // Attach event listeners to buttons within this card only
+            yesBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const popup = document.createElement('div');
+                popup.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 50px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;';
+                popup.innerHTML = '<p style="color: #4CAF50; margin: 0;">Nice of you, have a colorful day!</p>';
+                document.body.appendChild(popup);
+                setTimeout(() => popup.remove(), 3000);
+            });
+
+            noBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Create a new card for 'No' response
+                const card2 = document.createElement('div');
+                card2.style.cssText = 'margin: 20px auto; padding: 20px; background: #ffebee; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 300px;';
+
+                const text2 = document.createElement('p');
+                text2.innerHTML = 'no breakfast <br>want to take lunch?';
+                text2.style.color = 'red';
+
+                const yesBtn2 = document.createElement('button');
+                yesBtn2.textContent = 'Yes';
+                yesBtn2.style.marginRight = '10px';
+
+                const noBtn2 = document.createElement('button');
+                noBtn2.textContent = 'No';
+
+                card2.appendChild(text2);
+                card2.appendChild(yesBtn2);
+                card2.appendChild(noBtn2);
+
+                // Attach listeners for the new card's buttons
+                yesBtn2.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const popup = document.createElement('div');
+                    popup.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 50px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 1000;';
+                    popup.innerHTML = '<p style="color: #4CAF50; margin: 0;">Enjoy your lunch!</p>';
+                    document.body.appendChild(popup);
+                    setTimeout(() => popup.remove(), 3000);
+                });
+
+                noBtn2.addEventListener('click', function(e) {
+
+                    e.stopPropagation();
+                    setTimeout(function() {
+                        const answer = confirm("I am hungry, aren't you? But do we have some money to buy lunch?");
+                        if (!answer) {
+                            // Create supper wait card with timer
+                            const supperCard = document.createElement('div');
+                            supperCard.style.cssText = 'margin: 20px auto; padding: 20px; background: #fffde7; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 350px;';
+
+                            const supperText = document.createElement('p');
+                            supperText.textContent = 'Wait for supper';
+                            supperText.style.color = '#ff9800';
+
+                            const timerText = document.createElement('p');
+                            timerText.style.fontWeight = 'bold';
+                            timerText.style.fontSize = '1.1em';
+
+                            supperCard.appendChild(supperText);
+                            supperCard.appendChild(timerText);
+                            document.body.appendChild(supperCard);
+
+                            function updateTimer() {
+                                const now = new Date();
+                                let supperTime = new Date(now);
+                                supperTime.setHours(21, 0, 0, 0); // 9:00pm
+                                if (now > supperTime) {
+                                    timerText.textContent = 'It\'s already supper time!';
+                                    return;
+                                }
+                                const diffMs = supperTime - now;
+                                const diffH = Math.floor(diffMs / (1000 * 60 * 60));
+                                const diffM = Math.floor((diffMs / (1000 * 60)) % 60);
+                                timerText.textContent = `${diffH} hour(s) and ${diffM} minute(s) remaining to supper`;
+                            }
+                            updateTimer();
+                            const timerInterval = setInterval(function() {
+                                updateTimer();
+                                // Stop timer at 9:00pm
+                                const now = new Date();
+                                if (now.getHours() >= 21) {
+                                    clearInterval(timerInterval);
+                                    timerText.textContent = 'It\'s supper time!';
+                                }
+                            }, 1000 * 30); // update every 30 seconds
+                        } else {
+                            // OK clicked: show food selection card
+                            const foodCard = document.createElement('div');
+                            foodCard.style.cssText = 'margin: 20px auto; padding: 20px; background: #e3f2fd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 350px;';
+
+                            const foodText = document.createElement('p');
+                            foodText.textContent = 'What are we gonna eat?';
+
+                            const select = document.createElement('select');
+                            select.style.marginTop = '10px';
+                            select.style.fontSize = '1em';
+                            select.style.padding = '5px 10px';
+                            [
+                                'cassava and water',
+                                'chips and chicken',
+                                'pizza',
+                                'kawuunga and beans',
+                                'ebitakuri'
+                            ].forEach(function(optionText) {
+                                const opt = document.createElement('option');
+                                opt.value = optionText;
+                                opt.textContent = optionText;
+                                select.appendChild(opt);
+                            });
+
+                            foodCard.appendChild(foodText);
+                            foodCard.appendChild(select);
+
+                            // Add paragraph and buttons
+                            const coinsPara = document.createElement('p');
+                            coinsPara.textContent = 'But do we enogh coins to purchase this food?';
+                            foodCard.appendChild(coinsPara);
+
+                            const yesCoinsBtn = document.createElement('button');
+                            yesCoinsBtn.textContent = 'Yes I have';
+                            yesCoinsBtn.style.marginRight = '10px';
+                            const notSureBtn = document.createElement('button');
+                            notSureBtn.textContent = 'Not sure';
+                            foodCard.appendChild(yesCoinsBtn);
+                            foodCard.appendChild(notSureBtn);
+
+                            // YES I HAVE: clear all cards and show green card with tick and message
+                            yesCoinsBtn.addEventListener('click', function() {
+                                // Remove all cards (divs with inline style containing 'background')
+                                document.querySelectorAll('div').forEach(function(div) {
+                                    if (div.style.background) div.remove();
+                                });
+                                // Create green card
+                                const greenCard = document.createElement('div');
+                                greenCard.style.cssText = 'margin: 40px auto; padding: 30px; background: #e8f5e9; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); max-width: 400px; border: 3px solid #43a047; display: flex; flex-direction: column; align-items: center;';
+                                // SVG tick
+                                greenCard.innerHTML = `
+                                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="30" cy="30" r="28" stroke="#43a047" stroke-width="4" fill="#c8e6c9"/>
+                                        <path d="M18 32L27 41L43 23" stroke="#43a047" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <p style="color:#388e3c; font-weight:bold; font-size:1.3em; margin: 16px 0 0 0;">Well done, day well spent</p>
+                                    <p style="color:#388e3c; font-size:1.1em; margin: 8px 0 0 0;">with <b>${select.value}</b> as supper.</p>
+                                `;
+                                document.body.appendChild(greenCard);
+                            });
+
+                            // NOT SURE: show popup for requesting coins
+                            notSureBtn.addEventListener('click', function() {
+                                // Popup overlay
+                                const overlay = document.createElement('div');
+                                overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:2000;display:flex;align-items:center;justify-content:center;';
+
+                                // Popup box
+                                const popup = document.createElement('div');
+                                popup.style.cssText = 'background:#fff;padding:32px 24px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.18);min-width:320px;max-width:90vw;text-align:center;position:relative;';
+
+                                // Heading
+                                const h1 = document.createElement('h1');
+                                h1.textContent = 'Request for coins';
+                                h1.style.marginBottom = '18px';
+                                popup.appendChild(h1);
+
+                                // Select request mode
+                                const modeLabel = document.createElement('label');
+                                modeLabel.textContent = 'Request mode: ';
+                                modeLabel.style.fontWeight = 'bold';
+                                modeLabel.style.marginRight = '8px';
+                                popup.appendChild(modeLabel);
+                                const modeSelect = document.createElement('select');
+                                ['whatsapp','sms','phone call'].forEach(function(opt) {
+                                    const o = document.createElement('option');
+                                    o.value = opt;
+                                    o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+                                    modeSelect.appendChild(o);
+                                });
+                                popup.appendChild(modeSelect);
+
+                                // WhatsApp input and send
+                                const waDiv = document.createElement('div');
+                                waDiv.style.marginTop = '18px';
+                                waDiv.style.display = 'block';
+                                const waInput = document.createElement('input');
+                                waInput.type = 'text';
+                                waInput.placeholder = 'WhatsApp number';
+                                waInput.style.marginRight = '10px';
+                                waInput.style.padding = '6px';
+                                waInput.style.fontSize = '1em';
+                                waDiv.appendChild(waInput);
+                                const waSendBtn = document.createElement('button');
+                                waSendBtn.textContent = 'Send';
+                                waDiv.appendChild(waSendBtn);
+                                popup.appendChild(waDiv);
+
+                                // SMS input and send
+                                const smsDiv = document.createElement('div');
+                                smsDiv.style.marginTop = '18px';
+                                smsDiv.style.display = 'none';
+                                const smsInput = document.createElement('input');
+                                smsInput.type = 'text';
+                                smsInput.placeholder = 'Phone number';
+                                smsInput.style.marginRight = '10px';
+                                smsInput.style.padding = '6px';
+                                smsInput.style.fontSize = '1em';
+                                smsDiv.appendChild(smsInput);
+                                const smsSendBtn = document.createElement('button');
+                                smsSendBtn.textContent = 'Send SMS';
+                                smsDiv.appendChild(smsSendBtn);
+                                popup.appendChild(smsDiv);
+
+                                // Phone call input and call button
+                                const callDiv = document.createElement('div');
+                                callDiv.style.marginTop = '18px';
+                                callDiv.style.display = 'none';
+                                const callInput = document.createElement('input');
+                                callInput.type = 'text';
+                                callInput.placeholder = 'Phone number';
+                                callInput.style.marginRight = '10px';
+                                callInput.style.padding = '6px';
+                                callInput.style.fontSize = '1em';
+                                callDiv.appendChild(callInput);
+                                const callBtn = document.createElement('button');
+                                callBtn.textContent = 'Call';
+                                callDiv.appendChild(callBtn);
+                                popup.appendChild(callDiv);
+
+                                // Show/hide input sections based on mode
+                                function updateModeInputs() {
+                                    waDiv.style.display = modeSelect.value === 'whatsapp' ? 'block' : 'none';
+                                    smsDiv.style.display = modeSelect.value === 'sms' ? 'block' : 'none';
+                                    callDiv.style.display = modeSelect.value === 'phone call' ? 'block' : 'none';
+                                }
+                                modeSelect.addEventListener('change', updateModeInputs);
+                                updateModeInputs();
+
+                                // WhatsApp send logic
+                                waSendBtn.addEventListener('click', function() {
+                                    const number = waInput.value.trim().replace(/[^\d]/g, '');
+                                    if (!number) {
+                                        alert('Please enter a WhatsApp number.');
+                                        return;
+                                    }
+                                    const msg = encodeURIComponent(`hello ${number}, wanna buy some ${select.value} but am out of coins, hlp me with some, plz🍽`);
+                                    // Open WhatsApp chat
+                                    window.open(`https://wa.me/${number}?text=${msg}`, '_blank');
+                                    document.body.removeChild(overlay);
+                                });
+
+                                // SMS send logic
+                                smsSendBtn.addEventListener('click', function() {
+                                    const number = smsInput.value.trim().replace(/[^\d]/g, '');
+                                    if (!number) {
+                                        alert('Please enter a phone number.');
+                                        return;
+                                    }
+                                    const msg = encodeURIComponent(`hello ${number}, wanna buy some ${select.value} but am out of coins, hlp me with some, plz🍽`);
+                                    // Open SMS app
+                                    window.open(`sms:${number}?body=${msg}`, '_blank');
+                                    document.body.removeChild(overlay);
+                                });
+
+                                // Phone call logic
+                                callBtn.addEventListener('click', function() {
+                                    const number = callInput.value.trim().replace(/[^\d]/g, '');
+                                    if (!number) {
+                                        alert('Please enter a phone number.');
+                                        return;
+                                    }
+                                    // Open phone dialer
+                                    window.open(`tel:${number}`, '_blank');
+                                    document.body.removeChild(overlay);
+                                });
+
+                                // Close popup on overlay click (not popup itself)
+                                overlay.addEventListener('click', function(e) {
+                                    if (e.target === overlay) document.body.removeChild(overlay);
+                                });
+
+                                overlay.appendChild(popup);
+                                document.body.appendChild(overlay);
+                            });
+
+                            document.body.appendChild(foodCard);
+                        }
+                    }, 300);
+                });
+
+                document.body.appendChild(card2);
+            });
+
+            document.body.appendChild(card);
+        });
+        // ...existing code...
+
+
+    </script>
+</body>
+</html>
